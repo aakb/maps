@@ -1,0 +1,15 @@
+{
+  "name": "Logger",
+  "description": "Plugin to logge message to a log file",
+  "version": "0.0.1",
+  "main": "logger.js",
+  "private": true,
+  "dependencies": {
+    "winston": "^1.1.1"
+  },
+  "plugin": {
+    "provides": [
+      "logger"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "port": 8080,
+  "secret": "MySuperSecret",
+  "admin": {
+    "username": "admin",
+    "password": "admin"
+  },
+  "logs": {
+    "all": "logs/messages.log",
+    "info": "logs/info.log",
+    "error": "logs/error.log",
+    "debug": "logs/debug.log"
+  }
+}
