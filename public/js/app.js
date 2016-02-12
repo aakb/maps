@@ -4,7 +4,7 @@
 */
 
 // Define the angular application.
-var app = angular.module('MapsApp', [ 'ngRoute', 'ngOverlay', 'appMessage' ]);
+var app = angular.module('MapsApp', [ 'ngRoute', 'ngOverlay' ]);
 
 /**
  * Configure routes and add auth interceptor.

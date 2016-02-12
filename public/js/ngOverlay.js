@@ -45,8 +45,9 @@
               $templateCache.put(options.template, template);
 
               // Build basic overlay and add content.
-              self.$result = $dialog = $el('<div id="myModal" class="modal fade"><div class="modal-dialog"><div class="modal-content">');
-              $('.modal-content', $dialog).html(template);
+              self.$result = $dialog = $el('<div id="myModal" class="modalDialog">');
+              $dialog.html(template).hide();
+              $dialogParent.append($dialog);
 
               // Check if controller have been given as options and init the
               // controller.
@@ -63,17 +64,7 @@
               $timeout(function () {
                 // Render the dialog.
                 $compile($dialog)(scope);
-                $dialogParent.append($dialog);
-
-                // Let bootstrap take over.
-                var el = $("#myModal");
-                el.modal('show');
-
-                // Ensures that the modal code is removed on close. This will also
-                // ensure that the modal is updated if open once more.
-                el.on('hidden.bs.modal', function (e) {
-                  angular.element(document.querySelector('#myModal')).remove();
-                });
+                $dialog.fadeIn("slow");
               });
             });
 
@@ -115,7 +106,10 @@
            * Close function to close the open modal window.
            */
           "close": function close() {
-            $("#myModal").modal('hide');
+            var dialog = $(document.querySelector('#myModal'));
+            dialog.fadeOut('slow', function() {
+              this.remove();
+            });
           }
         };
       }
