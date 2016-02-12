@@ -4,6 +4,7 @@ config.json
 apikeys.json
 dump.rdb
 ssl/ind*
+logs/*
 *.log
 .DS_Store
 *.pid

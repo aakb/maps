@@ -1,37 +1,37 @@
 <section class="section">
-    <div class="container">
-      <div class="columns">
-        <div class="column">
-          <div class="content">
-            
-            <h1 class="title">Create new map</h1>
-            <p>To create an new map simply fill out the form or edit existing
-              maps by loggin in.</p>
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="content">
 
-            <p class="control is-withicon">
-              <input class="input" type="email" placeholder="Email" data-ng-model="user.mail">
-              <i class="fa fa-envelope"></i>
-            </p>
+          <h1 class="title">Create new map</h1>
+          <p>To create an new map simply fill out the form or edit existing
+            maps by loggin in.</p>
 
-            <p class="control is-withicon">
-              <input class="input" type="text" placeholder="Name" data-ng-model="user.name">
-              <i class="fa fa-user"></i>
-            </p>
+          <p class="control is-withicon">
+            <input class="input" type="email" placeholder="Email" data-ng-model="user.mail">
+            <i class="fa fa-envelope"></i>
+          </p>
 
-            <p class="control is-withicon">
-              <input class="input" type="password" placeholder="Password" data-ng-model="user.pass">
-              <i class="fa fa-lock"></i>
-            </p>
+          <p class="control is-withicon">
+            <input class="input" type="text" placeholder="Name" data-ng-model="user.name">
+            <i class="fa fa-user"></i>
+          </p>
 
-            <p class="control is-right">
-              <button class="button is-success">
-                <i class="fa fa-map"></i>
-                Create new map
-              </button>
-            </p>
+          <p class="control is-withicon">
+            <input class="input" type="password" placeholder="Password" data-ng-model="user.pass">
+            <i class="fa fa-lock"></i>
+          </p>
 
-          </div>
+          <p class="control is-right">
+            <a class="button is-success" data-ng-click="createClick()">
+              <i class="fa fa-map-o"></i>
+              &nbsp;New map
+            </a>
+          </p>
+
         </div>
       </div>
     </div>
+  </div>
 </section>
