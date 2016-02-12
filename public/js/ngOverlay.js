@@ -65,6 +65,13 @@
                 // Render the dialog.
                 $compile($dialog)(scope);
                 $dialog.fadeIn("slow");
+
+                $(document).keyup(function(e) {
+                  if (e.keyCode == 27) {
+                    // Escape key maps to keycode `27`
+                    self.close();
+                  }
+                });
               });
             });
 

@@ -13,17 +13,20 @@
   bottom: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.8);
-  z-index: 99999;
+  z-index: 100;
 }
 .modalDialog > div {
   background-color: #FFF;
+  border-radius: 3px;
   position: relative;
   margin: 10% auto;
   width: 50%;
+  z-index: 200;
 }
 
 .modalDialog .header {
   background-image: linear-gradient(141deg, #0FB8AD 0%, #1FC8DB 71%, #2CB5E8 100%);
+  border-radius: 3px;
   padding: 10px;
 }
 
