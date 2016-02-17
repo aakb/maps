@@ -19,6 +19,10 @@ var config = [
     "logs": configs.logs
   },
   {
+    "packagePath": "./plugins/database",
+    "path": path.join(__dirname, '/')
+  },
+  {
     "packagePath": "./plugins/server",
     "port": configs.port,
     "path": path.join(__dirname, 'public')

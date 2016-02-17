@@ -1,0 +1,15 @@
+{
+  "name": "Database",
+  "description": "Plugin to communication with a database",
+  "version": "0.0.1",
+  "main": "database.js",
+  "private": true,
+  "dependencies": {
+    "sqlite3": "^3.1.1"
+  },
+  "plugin": {
+    "provides": [
+      "database"
+    ]
+  }
+}
