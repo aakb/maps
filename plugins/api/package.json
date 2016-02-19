@@ -5,13 +5,14 @@
   "main": "api.js",
   "private": true,
   "dependencies": {
-    "q": "^1.4.1",
-    "express-jwt": "^3.0.1"
+    "jsonfile": "^2.2.3",
+    "q": "^1.4.1"
   },
   "plugin": {
     "consumes": [
       "app",
-      "logger"
+      "logger",
+      "layers"
     ]
   }
 }

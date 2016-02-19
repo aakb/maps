@@ -1,6 +1,6 @@
 {
-  "name": "infostander",
-  "description": "Infostander proxy to handle communication between symfony and the front-end",
+  "name": "ITKMaps",
+  "description": "Generate embedable maps for web sites.",
   "version": "0.0.1",
   "private": true,
   "dependencies": {

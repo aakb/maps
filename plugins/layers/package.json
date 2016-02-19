@@ -1,0 +1,19 @@
+{
+  "name": "Layers",
+  "description": "Geojson maps layers storage",
+  "version": "0.0.1",
+  "main": "layers.js",
+  "private": true,
+  "dependencies": {
+    "geojson": "^0.3.0",
+    "jsonfile": "^2.2.3",
+    "mongoose": "^4.4.4",
+    "mongoose-geojson-schema": "^0.0.2",
+    "q": "^1.4.1"
+  },
+  "plugin": {
+    "provides": [
+      "layers"
+    ]
+  }
+}

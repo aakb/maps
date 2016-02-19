@@ -19,21 +19,18 @@ var config = [
     "logs": configs.logs
   },
   {
-    "packagePath": "./plugins/database",
-    "path": path.join(__dirname, '/')
-  },
-  {
     "packagePath": "./plugins/server",
     "port": configs.port,
     "path": path.join(__dirname, 'public')
   },
   {
-    "packagePath": "./plugins/admin",
-    "secret": configs.secret
+    "packagePath": "./plugins/admin"
   },
   {
-    "packagePath": "./plugins/api",
-    "secret": configs.secret
+    "packagePath": "./plugins/layers"
+  },
+  {
+    "packagePath": "./plugins/api"
   }
 ];
 
