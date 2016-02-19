@@ -8,7 +8,6 @@ var path = require('path');
 
 // NPM modules.
 var Q = require('q');
-var jf = require('jsonfile');
 
 /**
  * This object encapsulate the RESET API.

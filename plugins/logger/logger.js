@@ -66,22 +66,6 @@ var Logger = function Logger(logs) {
       exitOnError: false
     });
   }
-
-  if (logs.hasOwnProperty('exception')) {
-    this.excepLog = new (winston.Logger)({
-      levels: levels,
-      transports: [
-        new (winston.transports.DailyRotateFile)({
-          name: 'exceptions-file',
-          filename: path.join(__dirname, '../../' + logs.exception),
-          datePattern: '.dd-MM-yyTHH',
-          handleExceptions: true,
-          humanReadableUnhandledException: true
-        })
-      ],
-      exitOnError: true
-    });
-  }
 };
 
 /**

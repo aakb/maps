@@ -37,12 +37,12 @@ var Layers = function Layers(options) {
  * @param data
  *   GeoJSON FeatureCollection.
  */
-Layers.prototype.create = function create(data) {
+Layers.prototype.add = function add(data) {
   "use strict";
 
   var deferred = Q.defer();
 
-  var layer = new self.FeatureCollection(data);
+  var layer = new this.FeatureCollection(data);
   layer.save(function(err, layer) {
     if (err) {
       deferred.reject(err);
