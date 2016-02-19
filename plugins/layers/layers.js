@@ -36,7 +36,7 @@ var Layers = function Layers(options) {
   this.filter = {
     "_id": 0,
     "__v": 0,
-    "features._id": 0
+    "geojson.features._id": 0
   };
 };
 
@@ -114,8 +114,10 @@ Layers.prototype.metadata = function search(metadata) {
 
   var deferred = Q.defer();
 
-  // Filter out geojson data.
+  // Filter out geojson data, but first remove _id filter or geojson data will
+  // be loaded.
   var filter = JSON.parse(JSON.stringify(this.filter));
+  delete filter['geojson.features._id'];
   filter['geojson'] = 0;
 
   this.search({}, filter).then(function (data) {
