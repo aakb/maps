@@ -1,5 +1,5 @@
-angular.module('MapsApp').directive('itkMap', [
-  function () {
+angular.module('MapsApp').directive('itkMap', ['geoJsonService',
+  function (geoJsonService) {
     "use strict";
 
     return {
@@ -7,8 +7,11 @@ angular.module('MapsApp').directive('itkMap', [
       scope: {},
       link: function (scope, element, attrs) {
 
+        geoJsonService.getMetadata().then(function (data) {
+          console.log(data);
+        });
 
-        $.getJSON("/api/layer/0", function(data) {
+        geoJsonService.getLayer(1).then(function(data) {
 
           var map = L.map('map');
           map.setView(new L.LatLng(56.1883678647531, 11.634521484374998), 7);

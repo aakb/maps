@@ -19,14 +19,45 @@ var config = [
   }
 ];
 
+var Q = require('q');
+var colors = require('colors');
+
+function loadGeoJson(metadata, path, layers) {
+
+  var deferred = Q.defer();
+
+  var jf = require('jsonfile');
+  var fs = require('fs');
+
+  jf.readFile(path + "/" + metadata.file, function(err, json) {
+    if (err) {
+      console.log(colors.underline.red(err));
+    }
+    else {
+      var layer = {
+        "id": metadata.id,
+        "name": metadata.name,
+        "geojson": json
+      };
+      layers.add(layer).then(function (layer) {
+        console.log(colors.green('Layer "') + layer.name + colors.green('" was added with id ') + layer.id);
+        deferred.resolve();
+      }, function (err) {
+        console.log(colors.underline.red(err));
+        deferred.reject();
+      });
+    }
+  });
+
+  return deferred.promise;
+}
+
 // User the configuration to start the application.
 config = architect.resolveConfig(config, __dirname);
 architect.createApp(config, function (err, app) {
   if (err) {
     throw err;
   }
-
-  var colors = require('colors');
 
   // Check if "denmark" layer with id 1 exists.
   var layers = app.services.layers;
@@ -36,43 +67,18 @@ architect.createApp(config, function (err, app) {
       process.exit(1);
     }
 
-    // Layers (layer 1) not found, so lets load the GeoJSON files.
-    var jf = require('jsonfile');
-    var fs = require('fs');
-
     var path = __dirname + '/data/layers';
-    fs.readdir(path, function(err, files) {
-      if (err) {
-        console.log(colors.underline.red(err));
-        process.exit(1);
-      }
+    var metadata = require(path + '/layers.json');
 
-      // @TODO: Re-do this with promises, so the process can be exited when
-      //        completed.
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        if (file.indexOf('.geojson') > 0){
-          jf.readFile(path + "/" + file, function(err, json) {
-            if (err) {
-              console.log(colors.underline.red(err));
-            }
-            else {
-              var layer = {
-                "name": 'Unknown',
-                "geojson": json
-              };
-              layers.add(layer).then(function (layer) {
-                console.log('Layer was added with id: '.green + layer.id);
-              }, function (err) {
-                console.log(colors.underline.red(err));
-              });
-            }
-          });
-        }
-      }
+    var loaders = [];
+    for (var i = 0; i < metadata.length; i++) {
+      loaders.push(loadGeoJson(metadata[i], path, layers));
+    }
+
+    Q.all(loaders).then(function () {
+      console.log('All layers have been loaded'.green);
+      process.exit();
     });
-
-
   }, function error(err) {
     throw new Error(err);
   });

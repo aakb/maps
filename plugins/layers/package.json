@@ -8,7 +8,6 @@
     "geojson": "^0.3.0",
     "jsonfile": "^2.2.3",
     "mongoose": "^4.4.4",
-    "mongoose-auto-increment": "^5.0.1",
     "mongoose-geojson-schema": "^0.0.2",
     "q": "^1.4.1"
   },

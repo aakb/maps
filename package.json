@@ -7,6 +7,7 @@
     "architect": "0.1.11",
     "colors": "^1.1.2",
     "compression": "^1.6.1",
-    "jsonfile": "^2.2.3"
+    "jsonfile": "^2.2.3",
+    "q": "^1.4.1"
   }
 }

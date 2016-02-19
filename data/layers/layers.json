@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1,
+    "name": "Danmark",
+    "file": "denmark.geojson"
+  },
+  {
+    "id": 2,
+    "name": "Kommuner",
+    "file": "kommune.min.geojson"
+  },
+  {
+    "id": 3,
+    "name": "Regioner",
+    "file": "region.min.geojson"
+  },
+  {
+    "id": 4,
+    "name": "Sogne",
+    "file": "sogne.min.geojson"
+  },
+  {
+    "id": 5,
+    "name": "Statsforvaltninger",
+    "file": "statsforvaltning.min.geojson"
+  },
+  {
+    "id": 5,
+    "name": "Købstadskommuner",
+    "file": "koebstadskommune.min.geojson"
+  }
+]
+

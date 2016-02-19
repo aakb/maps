@@ -9,7 +9,6 @@
 var Q = require('q');
 var schema = require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
-var autoIncrement = require('mongoose-auto-increment');
 
 /**
  * Define the Base object (constructor).
@@ -31,9 +30,6 @@ var Layers = function Layers(options) {
     },
     "geojson": schema.FeatureCollection
   });
-  autoIncrement.initialize(mongoose.connection);
-  featureCollectionSchema.plugin(autoIncrement.plugin, { model: 'FeatureCollection', field: 'id' });
-
   this.FeatureCollection = mongoose.model('FeatureCollection', featureCollectionSchema);
 
   // Values to filter out for loaded layers.

@@ -4,14 +4,26 @@
  */
 
 angular.module('MapsApp')
-  .service('geojsonService', function($rootScope, $window){
+  .service('geoJsonService', function($q){
     'use strict';
 
     this.getLayer = function getLayer(id) {
+      var deferred = $q.defer();
 
+      $.getJSON("/api/layer/" + id, function(data) {
+        deferred.resolve(data);
+      });
+
+      return deferred.promise;
     };
 
-    this.getLayers = function getLayers() {
+    this.getMetadata = function getMetadata() {
+      var deferred = $q.defer();
 
+      $.getJSON("/api/layers/metadata", function(data) {
+        deferred.resolve(data);
+      });
+
+      return deferred.promise;
     };
   });
