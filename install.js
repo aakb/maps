@@ -57,8 +57,12 @@ architect.createApp(config, function (err, app) {
               console.log(colors.underline.red(err));
             }
             else {
-              layers.add(json).then(function (layer) {
-                console.log('Layer was added.'.green);
+              var layer = {
+                "name": 'Unknown',
+                "geojson": json
+              };
+              layers.add(layer).then(function (layer) {
+                console.log('Layer was added with id: '.green + layer.id);
               }, function (err) {
                 console.log(colors.underline.red(err));
               });

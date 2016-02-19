@@ -15,6 +15,10 @@ module.exports = function (options, imports, register) {
   // Start the express app.
   var app = express();
 
+  // Gzip content.
+  var compress = require('compression');
+  app.use(compress());
+
   // Connect middleware extension.
   var bodyParser = require('body-parser');
   var favicon = require('serve-favicon');
@@ -44,7 +48,11 @@ module.exports = function (options, imports, register) {
 
   // Set static path (absolute path in the filesystem).
   if (options.path !== undefined) {
-    app.use(express.static(options.path));
+    var max_age = 86400000 * 7;
+    app.use(express.static(options.path, {
+      "maxage": max_age,
+      "dotfiles": 'deny'
+    }));
   }
 
   // Start the server.

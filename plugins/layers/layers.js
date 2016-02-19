@@ -9,6 +9,7 @@
 var Q = require('q');
 var schema = require('mongoose-geojson-schema');
 var mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 
 /**
  * Define the Base object (constructor).
@@ -20,11 +21,23 @@ var Layers = function Layers(options) {
   mongoose.connect('mongodb://localhost/MapLayers');
 
   // Define the schema and compile it into a model.
-  var featureCollectionSchema = new mongoose.Schema(schema.FeatureCollection);
+  var featureCollectionSchema = new mongoose.Schema( {
+    "id": {
+      "type": Number,
+      "default": 0
+    },
+    "name": {
+      "type": String
+    },
+    "geojson": schema.FeatureCollection
+  });
+  autoIncrement.initialize(mongoose.connection);
+  featureCollectionSchema.plugin(autoIncrement.plugin, { model: 'FeatureCollection', field: 'id' });
+
   this.FeatureCollection = mongoose.model('FeatureCollection', featureCollectionSchema);
 
   // Values to filter out for loaded layers.
-  this.exclude = {
+  this.filter = {
     "_id": 0,
     "__v": 0,
     "features._id": 0
@@ -68,9 +81,9 @@ Layers.prototype.load = function load(field, value) {
   "use strict";
 
   var query = {};
-  query["features.properties." + field] = value;
+  query[field] = value;
 
-  return this.search(query);
+  return this.search(query, this.filter);
 };
 
 /**
@@ -78,25 +91,47 @@ Layers.prototype.load = function load(field, value) {
  *
  * @param searchQuery
  *   Search query object.
+ * @param filter
+ *   JSON object with properties to filter result.
  *
  * @returns {*|promise}
  */
-Layers.prototype.search = function search(searchQuery) {
+Layers.prototype.search = function search(searchQuery, filter) {
   "use strict";
 
   var self = this;
   var deferred = Q.defer();
 
-  self.FeatureCollection.findOne(searchQuery, self.exclude, function(err, layer) {
+  self.FeatureCollection.find(searchQuery, filter, function(err, data) {
     if (err) {
       deferred.reject(err);
     }
 
-    deferred.resolve({'layer': layer});
+    deferred.resolve(data);
   });
 
   return deferred.promise;
 };
+
+Layers.prototype.metadata = function search(metadata) {
+  "use strict";
+
+  var deferred = Q.defer();
+
+  // Filter out geojson data.
+  var filter = JSON.parse(JSON.stringify(this.filter));
+  filter['geojson'] = 0;
+
+  this.search({}, filter).then(function (data) {
+    deferred.resolve(data);
+  }, function (err) {
+    deferred.reject(err);
+  });
+
+  return deferred.promise;
+
+};
+
 
 /**
  * Register the plugin with architect.
