@@ -7,12 +7,32 @@
   {
     "id": 2,
     "name": "Kommuner",
-    "file": "kommune.min.geojson"
+    "file": "kommune_light.geojson"
   },
   {
     "id": 3,
     "name": "Regioner",
-    "file": "region.min.geojson"
+    "file": "region.geojson"
+  },
+  {
+    "id": 4,
+    "name": "Politikredse",
+    "file": "politikr.geojson"
+  },
+  {
+    "id": 5,
+    "name": "Optillingskredse",
+    "file": "opstilkr.geojson"
+  },
+  {
+    "id": 6,
+    "name": "Retskredse",
+    "file": "retskr.geojson"
+  },
+  {
+    "id": 7,
+    "name": "Sogn",
+    "file": "sogn.geojson"
   }
 ]
 
