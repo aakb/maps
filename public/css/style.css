@@ -33,3 +33,7 @@
 .modalDialog .content {
   padding: 10px;
 }
+
+.layer-select-option {
+  display: block;
+}

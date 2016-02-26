@@ -7,30 +7,23 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
       scope: {},
       link: function (scope, element, attrs) {
 
-        geoJsonService.getMetadata().then(function (data) {
-          console.log(data);
-        });
+        var loadedLayers = [];
+        var currentLayerId = 1;
 
-        geoJsonService.getLayer(1).then(function(data) {
-
-          var map = L.map('map');
+        // Load denmark base layer.
+        geoJsonService.getLayer(currentLayerId).then(function(data) {
+          // Create map without the zoom controller.
+          var map = L.map('map', { zoomControl:false });
           map.setView(new L.LatLng(56.1883678647531, 11.634521484374998), 7);
 
+          // Disable map zoom.
           map.doubleClickZoom.disable();
           map.scrollWheelZoom.disable();
+          map.dragging.disable();
 
-          function doStyleRegion(feature) {
-            return {
-              color: '#000',
-              fillColor: '#0fb8ad',
-              weight: 1.3,
-              dashArray: '',
-              opacity: 1.0,
-              fillOpacity: 1.0
-            };
-
-          }
-
+          /**
+           * Highlight feature by changing style.
+           */
           function highlightFeature(e) {
             var layer = e.target;
 
@@ -38,70 +31,135 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
               weight: 2,
               color: '#000',
               dashArray: '',
-              fillOpacity: 1.0
+              fillColor: '#A0A0A0',
+              fillOpacity: 0.1
             });
 
             if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
             }
-
-            info.update(layer.feature.properties);
           }
 
-          function resetHighlight(e) {
-            regions.resetStyle(e.target);
+          // Create json layer selector.
+          var Legend = L.Control.extend({
+            options: {
+              position: 'topleft'
+            },
 
-            info.update();
-          }
+            onAdd: function (map) {
+              var legend = L.DomUtil.create('div', 'layer-selection', L.DomUtil.get('map'));
 
-          function zoomToFeature(e) {
-            map.fitBounds(e.target.getBounds());
-          }
+              var layerSelectTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}"> {name}</span>';
+              var layerSelectCheckedTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}" checked> {name}</span>';
 
-          var bounds = L.latLngBounds([]);
+              legend.innerHTML = '<p>Layer selection</p>';
+              geoJsonService.getMetadata().then(function (data) {
+                for (var i = 0; i < data.length; i++ ) {
+                  var layerHTML = L.Util.template(layerSelectTemplate, data[i]);
+                  if (data[i].id == 1) {
+                    layerHTML = L.Util.template(layerSelectCheckedTemplate, data[i]);
+                  }
+                  else {
+                    layerHTML = L.Util.template(layerSelectTemplate, data[i]);
+                  }
+                  legend.innerHTML += layerHTML
+                }
+              });
 
-          function onEachFeature(feature, layer) {
-            layer.on({
-              mouseover: highlightFeature,
-              mouseout: resetHighlight,
-              click: zoomToFeature
-            });
+              L.DomEvent.addListener(legend, 'click', function(e) {
+                if (e.target.name == 'layerSelect') {
+                  var layerId = e.target.value;
 
-            // get the bounds of an individual feature
-            var layerBounds = layer.getBounds();
-            // extend the bounds of the collection to fit the bounds of the new feature
-            bounds.extend(layerBounds);
-          }
+                  // Check if layer have been loaded.
+                  if (loadedLayers[layerId] == undefined) {
+                    geoJsonService.getLayer(layerId).then(function(data) {
+                      var loadedLayer = new L.geoJson(data, {
+                        style: function () {
+                          return {
+                            color: '#000',
+                            fillColor: '#FFF',
+                            weight: 1.3,
+                            dashArray: '',
+                            opacity: 1.0,
+                            fillOpacity: 1.0
+                          }
+                        },
+                        onEachFeature: function (feature, layer) {
+                          layer.on({
+                            mouseover: highlightFeature,
+                            mouseout: resetHighlight,
+                            click: function() {
+                              alert('click');
+                            }
+                          })
+                        }
+                      });
+                      loadedLayer.addTo(map);
 
-          var regions = new L.geoJson(data, {
-            style: doStyleRegion,
-            onEachFeature: onEachFeature
+                      // Store loaded layer.
+                      loadedLayers[layerId] = loadedLayer;
+
+                      // Remove previous layer.
+                      map.removeLayer(loadedLayers[currentLayerId]);
+                      currentLayerId = layerId;
+                    });
+
+                  }
+                  else {
+                    // Add layer to map.
+                    loadedLayers[layerId].addTo(map);
+
+                    // Remove previous layer.
+                    map.removeLayer(loadedLayers[currentLayerId]);
+                    currentLayerId = layerId;
+                  }
+                }
+              });
+
+              return legend;
+            }
           });
 
-          regions.addTo(map);
+          map.addControl(new Legend());
 
-          // once we've looped through all the features, zoom the map to the extent of the collection
-          map.fitBounds(bounds);
+          /**
+           * Reset layer style.
+           */
+          function resetHighlight(e) {
+            denmark.resetStyle(e.target);
+          }
 
-          var info = L.control();
+          /**
+           * Load the base layer.
+           */
+          var denmark = new L.geoJson(data, {
+            style: function () {
+              return {
+                color: '#000',
+                fillColor: '#FFF',
+                weight: 1.3,
+                dashArray: '',
+                opacity: 1.0,
+                fillOpacity: 1.0
+              }
+            },
+            onEachFeature: function (feature, layer) {
+              layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: function() {
+                  alert('click');
+                }
+              })
+            }
+          });
 
-          info.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-            this.update();
-            return this._div;
-          };
+          // Save layer reference.
+          loadedLayers[currentLayerId] = denmark;
 
-          // method that we will use to update the control based on feature properties passed
-          info.update = function (props) {
-            this._div.innerHTML = (props ?
-            '<b>' + props.navn + '</b><br />' + props.fra
-              : 'Hover over a region');
-          };
-
-          info.addTo(map);
-
+          // Add layer to the map.
+          denmark.addTo(map);
         });
-
       }
     };
   }

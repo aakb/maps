@@ -109,7 +109,12 @@ Layers.prototype.search = function search(searchQuery, filter) {
   return deferred.promise;
 };
 
-Layers.prototype.metadata = function search(metadata) {
+/**
+ * Load metadata about layers availablee.
+ *
+ * @returns {*|promise}
+ */
+Layers.prototype.metadata = function metadata() {
   "use strict";
 
   var deferred = Q.defer();
@@ -127,7 +132,6 @@ Layers.prototype.metadata = function search(metadata) {
   });
 
   return deferred.promise;
-
 };
 
 

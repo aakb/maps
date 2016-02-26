@@ -62,6 +62,20 @@ var API = function (app, logger, layers, options) {
       res.end();
     });
   });
+
+  /**
+   * Load maps configuration.
+   */
+  app.get('api/map/:id', function (req, res) {
+
+  });
+
+  /**
+   * Save maps configuration.
+   */
+  app.post('api/map', function (req, res) {
+
+  });
 };
 
 /**
