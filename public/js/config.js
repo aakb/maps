@@ -6,7 +6,7 @@ angular.module('MapsAppConfig', []).constant('CONFIG', {
   'default': {
     'style': {
       color: '#000',
-      fillColor: '#FFF',
+      fillColor: 'rgba(19, 125, 0, 0.5)',
       weight: 1.3,
       dashArray: '',
       opacity: 1.0,
@@ -16,8 +16,8 @@ angular.module('MapsAppConfig', []).constant('CONFIG', {
       weight: 2,
       color: '#000',
       dashArray: '',
-      fillColor: '#A0A000',
-      fillOpacity: 0.1
+      fillColor: 'rgba(19, 125, 0, 0.2)',
+      fillOpacity: 1.0
     }
   }
 });

@@ -2,11 +2,11 @@
   "type": "FeatureCollection",
   "features": [
      {
-      "id": "test",
       "type": "Feature",
       "properties": {
         "objectid": 1,
-        "navn": "Danmark"
+        "navn": "Danmark",
+        "FEAT_ID": 1
       },
       "geometry": {
         "type": "MultiPolygon",

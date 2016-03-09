@@ -22,18 +22,6 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
           map.dragging.disable();
 
           /**
-           * Highlight feature by changing style.
-           */
-          function highlightFeature(e) {
-            var layer = e.target;
-
-            layer.setStyle(configurationService.getDefaultLayerConfig('highlight'));
-            if (!L.Browser.ie && !L.Browser.opera) {
-              layer.bringToFront();
-            }
-          }
-
-          /**
            * Display overlay for polygon configuration.
            */
           function featureClicked(layer, feature, layerId) {
@@ -46,11 +34,31 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
 
             // Get information for the clicked feature into the overlay.
             overlayScope.layer = layer;
-            overlayScope.properties = feature.properties;
+            overlayScope.feature = feature;
 
+            // Set default color values.
+            var style = configurationService.getLayerStyle(currentLayerId, overlayScope.feature.properties.FEAT_ID, ColorTypes.DEFAULT);
+            overlayScope.defaultColor = style.fillColor;
+            style = configurationService.getLayerStyle(currentLayerId, overlayScope.feature.properties.FEAT_ID, ColorTypes.HIGHLIGHT);
+            overlayScope.highlightColor = style.fillColor;
 
-            overlayScope.onColorChange = function ($event, color) {
-              console.log(color);
+            /**
+             * Color change callback from the color picker.
+             */
+            overlayScope.onColorChange = function onColorChange(field, color, type) {
+              // Get current layer style
+              var style = configurationService.getLayerStyle(currentLayerId, overlayScope.feature.properties.FEAT_ID, type);
+
+              // Update it with the new field value.
+              style[field] = color;
+
+              // Store it at the service.
+              configurationService.setLayerStyle(currentLayerId, overlayScope.feature.properties.FEAT_ID, style, type);
+
+              // Update the style on-screen.
+              if (type == ColorTypes.DEFAULT) {
+                updateLayerStyle(overlayScope.feature, overlayScope.layer, ColorTypes.DEFAULT);
+              }
             };
 
             /**
@@ -83,6 +91,11 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
             });
           }
 
+          function updateLayerStyle(feature, layer, type) {
+            var style = configurationService.getLayerStyle(currentLayerId, feature.properties.FEAT_ID, type);
+            layer.setStyle(style);
+          }
+
           // @TODO: Add base map options: OSM and GMAP.
 
           // Create json layer selector.
@@ -94,7 +107,8 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
             onAdd: function (map) {
               var legend = L.DomUtil.create('div', 'layer-selection', L.DomUtil.get('map'));
 
-              // @TODO: Get this from an Angular template file.
+              // @TODO: Get this from an Angular template file. So it's will be
+              //        easy to sort by id.
               var layerSelectTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}"> {name}</span>';
               var layerSelectCheckedTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}" checked> {name}</span>';
 
@@ -121,8 +135,11 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
                   if (loadedLayers[layerId] == undefined) {
                     geoJsonService.getLayer(layerId).then(function(data) {
                       var loadedLayer = new L.geoJson(data, {
-                        style: configurationService.getDefaultLayerConfig(),
-                        onEachFeature: function (feature, layer) {                          // Handle events for the features.
+                        onEachFeature: function (feature, layer) {
+                          // Set layer style.
+                          updateLayerStyle(feature, layer, 'default');
+
+                          // Handle layer/feature events.
                           layer.on({
                             mouseover: highlightFeature,
                             mouseout: resetHighlight,
@@ -161,18 +178,37 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
           map.addControl(new Legend());
 
           /**
+           * Highlight feature by changing style.
+           *
+           * @param e
+           *   The event fired.
+           */
+          function highlightFeature(e) {
+            var layer = e.target;
+            updateLayerStyle(layer.feature, layer, 'highlight');
+
+            if (!L.Browser.ie && !L.Browser.opera) {
+              layer.bringToFront();
+            }
+          }
+
+          /**
            * Reset layer style.
            */
           function resetHighlight(e) {
-            denmark.resetStyle(e.target);
+            var layer = e.target;
+            updateLayerStyle(layer.feature, layer, 'default');
           }
 
           /**
            * Load the base layer.
            */
           var denmark = new L.geoJson(data, {
-            style: configurationService.getDefaultLayerConfig(),
             onEachFeature: function (feature, layer) {
+              // Set layer style.
+              updateLayerStyle(feature, layer, 'default');
+
+              // Handle layer/feature events.
               layer.on({
                 mouseover: highlightFeature,
                 mouseout: resetHighlight,

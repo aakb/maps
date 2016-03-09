@@ -1,22 +1,32 @@
 <div class="columns">
   <div class="column">
     <div class="header">
-      <h1 class="title">Layer configuration ({{ properties.name }})</h1>
+      <h1 class="title">Layer configuration ({{ feature.properties.name }})</h1>
     </div>
 
     <div class="content">
+      <p>
+        <span class="label">Fill color:</span>
+        <color-picker ng-model="defaultColor" color-picker-format="'rgb'"
+                      color-picker-alpha="true"
+                      color-picker-swatch="true"
+                      color-picker-swatch-pos="left"
+                      color-picker-swatch-only="true"
+                      color-picker-on-change="onColorChange('fillColor', defaultColor, 'default')">
+        </color-picker>
 
-      <p style="color: {{ color }}">This is the pages description...</p>
+        <span class="label">Highlight color:</span>
+        <color-picker ng-model="highlightColor" color-picker-format="'rgb'"
+                      color-picker-alpha="true"
+                      color-picker-swatch="true"
+                      color-picker-swatch-pos="left"
+                      color-picker-swatch-only="true"
+                      color-picker-on-change="onColorChange('fillColor', highlightColor, 'highlight')">
+        </color-picker>
+      </p>
 
-
-      <color-picker ng-model="color"
-                    color-picker-format="'rgb'"
-                    color-picker-alpha="true"
-                    color-picker-swatch="true"
-                    color-picker-swatch-pos="left"
-                    color-picker-swatch-only="true"
-                    color-picker-on-change="onColorChange($event, color)">
-      </color-picker>
+      <br/>
+      <p>Someway figure out to attach data to the feature/layer</p>
 
       <!-- Close button -->
       <p class="control is-right">
