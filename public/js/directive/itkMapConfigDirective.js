@@ -48,6 +48,11 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
             overlayScope.layer = layer;
             overlayScope.properties = feature.properties;
 
+
+            overlayScope.onColorChange = function ($event, color) {
+              console.log(color);
+            };
+
             /**
              * Close overlay.
              */

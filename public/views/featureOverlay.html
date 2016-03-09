@@ -6,8 +6,17 @@
 
     <div class="content">
 
-      <p>This is the pages description...</p>
+      <p style="color: {{ color }}">This is the pages description...</p>
 
+
+      <color-picker ng-model="color"
+                    color-picker-format="'rgb'"
+                    color-picker-alpha="true"
+                    color-picker-swatch="true"
+                    color-picker-swatch-pos="left"
+                    color-picker-swatch-only="true"
+                    color-picker-on-change="onColorChange($event, color)">
+      </color-picker>
 
       <!-- Close button -->
       <p class="control is-right">
