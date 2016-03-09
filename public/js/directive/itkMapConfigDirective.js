@@ -1,5 +1,5 @@
-angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configurationService', 'ngOverlay',
-  function (geoJsonService, configurationService, ngOverlay) {
+angular.module('MapsApp').directive('itkMapConfig', [ '$timeout', '$templateCache', '$compile', '$q', '$http', 'geoJsonService', 'configurationService', 'ngOverlay',
+  function ($timeout, $templateCache, $compile, $q, $http, geoJsonService, configurationService, ngOverlay) {
     "use strict";
 
     return {
@@ -7,7 +7,7 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
       scope: {},
       link: function (scope, element, attrs) {
 
-        var loadedLayers = [];
+        var loadedLayers = {};
         var currentLayerId = 1;
 
         // Load denmark base layer.
@@ -96,9 +96,38 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
             layer.setStyle(style);
           }
 
+          /**
+           * Load template file from URL.
+           *
+           * @param tmpl
+           * @param config
+           * @returns {*}
+           */
+          function loadTemplateUrl(tmpl, config) {
+            return $http.get(tmpl, angular.extend({cache: false}, config || {})).then(function(res) {
+              return res.data || '';
+            });
+          }
+
+          /**
+           * Load template from cache and fallback to URL.
+           *
+           * @param tmpl
+           * @returns {*}
+           */
+          function loadTemplate(tmpl) {
+            if (!tmpl) {
+              return 'Empty template';
+            }
+
+            return $templateCache.get(tmpl) || loadTemplateUrl(tmpl, {cache: false});
+          }
+
           // @TODO: Add base map options: OSM and GMAP.
 
-          // Create json layer selector.
+          /**
+           * Create json layer selector object.
+           */
           var Legend = L.Control.extend({
             options: {
               position: 'topleft'
@@ -106,69 +135,106 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
 
             onAdd: function (map) {
               var legend = L.DomUtil.create('div', 'layer-selection', L.DomUtil.get('map'));
+              var $legend = angular.element(legend);
 
-              // @TODO: Get this from an Angular template file. So it's will be
-              //        easy to sort by id.
-              var layerSelectTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}"> {name}</span>';
-              var layerSelectCheckedTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}" checked> {name}</span>';
 
               // Add content to the layer selector.
-              legend.innerHTML = '<p>Layer selection</p>';
-              geoJsonService.getMetadata().then(function (data) {
-                for (var i = 0; i < data.length; i++ ) {
-                  var layerHTML = L.Util.template(layerSelectTemplate, data[i]);
-                  if (data[i].id == 1) {
-                    layerHTML = L.Util.template(layerSelectCheckedTemplate, data[i]);
-                  }
-                  else {
-                    layerHTML = L.Util.template(layerSelectTemplate, data[i]);
-                  }
-                  legend.innerHTML += layerHTML
-                }
-              });
+              $q.when(loadTemplate('views/layerSelection.html')).then(function (template) {
+                geoJsonService.getMetadata().then(function (data) {
+                  // Store the template in cache.
+                  $templateCache.put('views/layerSelection.html', template);
 
-              L.DomEvent.addListener(legend, 'click', function(e) {
-                if (e.target.name == 'layerSelect') {
-                  var layerId = e.target.value;
+                  // Create new scope.
+                  var legendScope = scope.$new(true);
+                  legendScope.layers = data;
+                  legendScope.disabled = false;
 
-                  // Check if layer have been loaded.
-                  if (loadedLayers[layerId] == undefined) {
-                    geoJsonService.getLayer(layerId).then(function(data) {
-                      var loadedLayer = new L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
-                          // Set layer style.
-                          updateLayerStyle(feature, layer, 'default');
+                  // For now the first layer selected is layer one.
+                  legendScope.selected = 1;
 
-                          // Handle layer/feature events.
-                          layer.on({
-                            mouseover: highlightFeature,
-                            mouseout: resetHighlight,
-                            click: function ()  {
-                              featureClicked(layer, feature, layerId);
-                            }
-                          })
-                        }
+                  /**
+                   * Layer selected handler
+                   *
+                   * @param layerId
+                   *   The layer id of the layer that should be displayed.
+                   */
+                  legendScope.layerSelected = function layerSelected($event, layerId) {
+                    // Prevent twice firing events when labels are wrapped
+                    // around input elements.
+                    if ($event.target.tagName === 'LABEL') {
+                      return
+                    }
+
+                    // Don't change layer if layer is selected.
+                    if (legendScope.selected === layerId) {
+                      return;
+                    }
+
+                    // Update the radio buttons.
+                    legendScope.selected = layerId;
+
+                    // Check if layer have been loaded.
+                    if (loadedLayers[layerId] === undefined) {
+
+                      // Disable layer selector while loading.
+                      legendScope.disabled = true;
+
+                      geoJsonService.getLayer(layerId).then(function(data) {
+                        var loadedLayer = new L.geoJson(data, {
+                          onEachFeature: function (feature, layer) {
+                            // Set layer style.
+                            updateLayerStyle(feature, layer, 'default');
+
+                            // Handle layer/feature events.
+                            layer.on({
+                              mouseover: highlightFeature,
+                              mouseout: resetHighlight,
+                              click: function ()  {
+                                featureClicked(layer, feature, layerId);
+                              }
+                            })
+                          }
+                        });
+                        loadedLayer.addTo(map);
+
+                        // Store loaded layer.
+                        loadedLayers[layerId] = loadedLayer;
+
+                        // Remove previous layer.
+                        map.removeLayer(loadedLayers[currentLayerId]);
+                        currentLayerId = layerId;
+
+                        // Re-enable the layer selector.
+                        legendScope.disabled = false;
                       });
-                      loadedLayer.addTo(map);
+                    }
+                    else {
+                      // Disable the layer selector.
+                      legendScope.disabled = true;
 
-                      // Store loaded layer.
-                      loadedLayers[layerId] = loadedLayer;
+                      // Add layer to map.
+                      loadedLayers[layerId].addTo(map);
 
                       // Remove previous layer.
                       map.removeLayer(loadedLayers[currentLayerId]);
                       currentLayerId = layerId;
-                    });
 
-                  }
-                  else {
-                    // Add layer to map.
-                    loadedLayers[layerId].addTo(map);
+                      // Re-enable the layer selector.
+                      legendScope.disabled = false;
+                    }
+                  };
 
-                    // Remove previous layer.
-                    map.removeLayer(loadedLayers[currentLayerId]);
-                    currentLayerId = layerId;
-                  }
-                }
+
+                  // Attach the angular template to the dom and render the
+                  // content.
+                  $legend.html(template);
+                  $legend.hide();
+                  $(legend).append($legend).hide();
+                  $timeout(function () {
+                    $compile($legend)(legendScope);
+                    $legend.fadeIn();
+                  });
+                });
               });
 
               return legend;

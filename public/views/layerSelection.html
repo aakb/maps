@@ -1,0 +1,9 @@
+<p>Layer selection</p>
+<p class="control">
+  <span data-ng-repeat="layer in layers | orderBy: 'id'">
+    <label class="radio layer-select-option" data-ng-class="{'is-disabled': disabled}" data-ng-click="layerSelected($event, layer.id)">
+      <input type="radio" name="layerSelect" value="{{ layer.id }}" data-ng-disabled="disabled" data-ng-model="selected">
+      {{ layer.name }}
+    </label>
+  </span>
+</p>
