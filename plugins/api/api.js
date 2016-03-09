@@ -37,7 +37,8 @@ var API = function (app, logger, layers, options) {
    * Layer based on object id property.
    */
   app.get('/api/layer/:id', function (req, res) {
-    layers.load('id', Number(req.params.id)).then(function (data) {
+    var id = Number(req.params.id);
+    layers.load('id', id).then(function (data) {
       res.append('Content-Type','application/json');
       res.append('Cache-Control','public, max-age=1209600');
       res.json(data[0].geojson);
@@ -53,6 +54,22 @@ var API = function (app, logger, layers, options) {
    */
   app.get('/api/layers/metadata', function (req, res) {
     layers.metadata().then(function (data) {
+      res.append('Content-Type','application/json');
+      res.append('Cache-Control','public, max-age=1209600');
+      res.json(data);
+      res.end();
+    }, function error(err) {
+      res.status(500).send(err);
+      res.end();
+    });
+  });
+
+  /**
+   * Metadata about all layers.
+   */
+  app.get('/api/layers/metadata/:id', function (req, res) {
+    var id = Number(req.params.id);
+    layers.metadataLayer(id).then(function (data) {
       res.append('Content-Type','application/json');
       res.append('Cache-Control','public, max-age=1209600');
       res.json(data);

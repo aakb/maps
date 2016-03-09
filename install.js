@@ -37,6 +37,7 @@ function loadGeoJson(metadata, path, layers) {
       var layer = {
         "id": metadata.id,
         "name": metadata.name,
+        "fields": metadata.fields,
         "geojson": json
       };
       layers.add(layer).then(function (layer) {

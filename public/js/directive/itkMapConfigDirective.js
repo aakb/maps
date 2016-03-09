@@ -36,19 +36,45 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
           /**
            * Display overlay for polygon configuration.
            */
-          function polygonClicked(layer) {
+          function featureClicked(layer, feature, layerId) {
+            // Check if name have been fixed.
+            if (!feature.properties.hasOwnProperty('name')) {
+              fixFeatureProperties(feature, layerId);
+            }
+
             var overlayScope = scope.$new(true);
 
+            // Get information for the clicked feature into the overlay.
             overlayScope.layer = layer;
+            overlayScope.properties = feature.properties;
 
+            /**
+             * Close overlay.
+             */
             overlayScope.close = function close() {
               overlay.close();
             };
 
             // Open the overlay.
             var overlay = ngOverlay.open({
-              template: "views/polygonOverlay.html",
+              template: "views/featureOverlay.html",
               scope: overlayScope
+            });
+          }
+
+          /**
+           * Helper function to stream line feature properties.
+           *
+           * @param feature
+           *   The feature to look at.
+           */
+          function fixFeatureProperties(feature, layerId) {
+            geoJsonService.getLayerMetadata(layerId).then(function(data) {
+              // Try to generate better name from the feature data.
+              feature.properties.name = 'Unknown name';
+              if (feature.properties.hasOwnProperty(data[0].fields[0].name)) {
+                feature.properties.name = feature.properties[data[0].fields[0].name];
+              }
             });
           }
 
@@ -91,11 +117,13 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
                     geoJsonService.getLayer(layerId).then(function(data) {
                       var loadedLayer = new L.geoJson(data, {
                         style: configurationService.getDefaultLayerConfig(),
-                        onEachFeature: function (feature, layer) {
+                        onEachFeature: function (feature, layer) {                          // Handle events for the features.
                           layer.on({
                             mouseover: highlightFeature,
                             mouseout: resetHighlight,
-                            click: polygonClicked
+                            click: function ()  {
+                              featureClicked(layer, feature, layerId);
+                            }
                           })
                         }
                       });
@@ -143,7 +171,9 @@ angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configur
               layer.on({
                 mouseover: highlightFeature,
                 mouseout: resetHighlight,
-                click: polygonClicked
+                click: function ()  {
+                  featureClicked(layer, feature, currentLayerId);
+                }
               })
             }
           });

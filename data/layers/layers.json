@@ -2,37 +2,58 @@
   {
     "id": 1,
     "name": "Danmark",
-    "file": "denmark.geojson"
+    "file": "denmark.geojson",
+    "fields": {
+      "name": "navn"
+    }
   },
   {
     "id": 2,
     "name": "Kommuner",
-    "file": "kommune_light.geojson"
+    "file": "kommune_light.geojson",
+    "fields": {
+      "name": "KOMNAVN"
+    }
   },
   {
     "id": 3,
     "name": "Regioner",
-    "file": "region.geojson"
+    "file": "region.geojson",
+    "fields": {
+      "name": "REGIONNAVN"
+    }
   },
   {
     "id": 4,
     "name": "Politikredse",
-    "file": "politikr.geojson"
+    "file": "politikr.geojson",
+    "fields": {
+      "name": "POLKR_NAVN"
+    }
   },
   {
     "id": 5,
     "name": "Optillingskredse",
-    "file": "opstilkr.geojson"
+    "file": "opstilkr.geojson",
+    "fields": {
+      "name": "OPSTILNAVN"
+    }
   },
   {
     "id": 6,
     "name": "Retskredse",
-    "file": "retskr.geojson"
+    "file": "retskr.geojson",
+    "fields": {
+      "name": "RETSKRNAVN"
+    }
   },
   {
     "id": 7,
     "name": "Sogn",
-    "file": "sogn.geojson"
+    "file": "sogn.geojson",
+    "fields": {
+      "name": "SOGNENAVN"
+    }
   }
 ]
 

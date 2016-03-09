@@ -28,6 +28,9 @@ var Layers = function Layers(options) {
     "name": {
       "type": String
     },
+    "fields": {
+      "type": Array
+    },
     "geojson": schema.FeatureCollection
   });
   this.FeatureCollection = mongoose.model('FeatureCollection', featureCollectionSchema);
@@ -134,6 +137,30 @@ Layers.prototype.metadata = function metadata() {
   return deferred.promise;
 };
 
+/**
+ * Load metadata about layers availablee.
+ *
+ * @returns {*|promise}
+ */
+Layers.prototype.metadataLayer = function metadataLayer(id) {
+  "use strict";
+
+  var deferred = Q.defer();
+
+  // Filter out geojson data, but first remove _id filter or geojson data will
+  // be loaded.
+  var filter = JSON.parse(JSON.stringify(this.filter));
+  delete filter['geojson.features._id'];
+  filter['geojson'] = 0;
+
+  this.search({ "id": id }, filter).then(function (data) {
+    deferred.resolve(data);
+  }, function (err) {
+    deferred.reject(err);
+  });
+
+  return deferred.promise;
+};
 
 /**
  * Register the plugin with architect.
