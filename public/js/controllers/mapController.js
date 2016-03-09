@@ -1,7 +1,7 @@
 /**
  * Login page.
  */
-app.controller('mapController', ['$scope', 'ngOverlay',
+angular.module('MapsApp').controller('mapController', ['$scope', 'ngOverlay',
   function ($scope, ngOverlay) {
     "use strict";
 
@@ -12,14 +12,30 @@ app.controller('mapController', ['$scope', 'ngOverlay',
       var scope = $scope.$new(true);
       scope.close = function close() {
         overlay.close();
-      }
+      };
 
       // Open the overlay.
       var overlay = ngOverlay.open({
         template: "views/layerOverlay.html",
         scope: scope
       });
-    }
+    };
+
+    /**
+     * Open overlay with embed code.
+     */
+    $scope.mapConfiguration = function mapConfiguration() {
+      var scope = $scope.$new(true);
+      scope.close = function close() {
+        overlay.close();
+      };
+
+      // Open the overlay.
+      var overlay = ngOverlay.open({
+        template: "views/mapConfigurationOverlay.html",
+        scope: scope
+      });
+    };
 
     /**
      * Open overlay with embed code.
@@ -28,13 +44,13 @@ app.controller('mapController', ['$scope', 'ngOverlay',
       var scope = $scope.$new(true);
       scope.close = function close() {
         overlay.close();
-      }
+      };
 
       // Open the overlay.
       var overlay = ngOverlay.open({
         template: "views/codeOverlay.html",
         scope: scope
       });
-    }
+    };
   }
 ]);

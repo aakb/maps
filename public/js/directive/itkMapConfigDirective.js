@@ -1,5 +1,5 @@
-angular.module('MapsApp').directive('itkMap', ['geoJsonService',
-  function (geoJsonService) {
+angular.module('MapsApp').directive('itkMapConfig', ['geoJsonService', 'configurationService', 'ngOverlay',
+  function (geoJsonService, configurationService, ngOverlay) {
     "use strict";
 
     return {
@@ -27,18 +27,32 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
           function highlightFeature(e) {
             var layer = e.target;
 
-            layer.setStyle({
-              weight: 2,
-              color: '#000',
-              dashArray: '',
-              fillColor: '#A0A0A0',
-              fillOpacity: 0.1
-            });
-
+            layer.setStyle(configurationService.getDefaultLayerConfig('highlight'));
             if (!L.Browser.ie && !L.Browser.opera) {
               layer.bringToFront();
             }
           }
+
+          /**
+           * Display overlay for polygon configuration.
+           */
+          function polygonClicked(layer) {
+            var overlayScope = scope.$new(true);
+
+            overlayScope.layer = layer;
+
+            overlayScope.close = function close() {
+              overlay.close();
+            };
+
+            // Open the overlay.
+            var overlay = ngOverlay.open({
+              template: "views/polygonOverlay.html",
+              scope: overlayScope
+            });
+          }
+
+          // @TODO: Add base map options: OSM and GMAP.
 
           // Create json layer selector.
           var Legend = L.Control.extend({
@@ -49,9 +63,11 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
             onAdd: function (map) {
               var legend = L.DomUtil.create('div', 'layer-selection', L.DomUtil.get('map'));
 
+              // @TODO: Get this from an Angular template file.
               var layerSelectTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}"> {name}</span>';
               var layerSelectCheckedTemplate = '<span class="layer-select-option"><input type="radio" name="layerSelect" value="{id}" checked> {name}</span>';
 
+              // Add content to the layer selector.
               legend.innerHTML = '<p>Layer selection</p>';
               geoJsonService.getMetadata().then(function (data) {
                 for (var i = 0; i < data.length; i++ ) {
@@ -74,23 +90,12 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
                   if (loadedLayers[layerId] == undefined) {
                     geoJsonService.getLayer(layerId).then(function(data) {
                       var loadedLayer = new L.geoJson(data, {
-                        style: function () {
-                          return {
-                            color: '#000',
-                            fillColor: '#FFF',
-                            weight: 1.3,
-                            dashArray: '',
-                            opacity: 1.0,
-                            fillOpacity: 1.0
-                          }
-                        },
+                        style: configurationService.getDefaultLayerConfig(),
                         onEachFeature: function (feature, layer) {
                           layer.on({
                             mouseover: highlightFeature,
                             mouseout: resetHighlight,
-                            click: function() {
-                              alert('click');
-                            }
+                            click: polygonClicked
                           })
                         }
                       });
@@ -133,23 +138,12 @@ angular.module('MapsApp').directive('itkMap', ['geoJsonService',
            * Load the base layer.
            */
           var denmark = new L.geoJson(data, {
-            style: function () {
-              return {
-                color: '#000',
-                fillColor: '#FFF',
-                weight: 1.3,
-                dashArray: '',
-                opacity: 1.0,
-                fillOpacity: 1.0
-              }
-            },
+            style: configurationService.getDefaultLayerConfig(),
             onEachFeature: function (feature, layer) {
               layer.on({
                 mouseover: highlightFeature,
                 mouseout: resetHighlight,
-                click: function() {
-                  alert('click');
-                }
+                click: polygonClicked
               })
             }
           });

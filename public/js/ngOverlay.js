@@ -45,7 +45,7 @@
               $templateCache.put(options.template, template);
 
               // Build basic overlay and add content.
-              self.$result = $dialog = $el('<div id="myModal" class="modalDialog">');
+              self.$result = $dialog = $el('<div id="myModal" class="modalDialog is-overlay">');
               $dialog.html(template).hide();
               $dialogParent.append($dialog);
 

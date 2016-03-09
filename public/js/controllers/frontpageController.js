@@ -1,15 +1,15 @@
 /**
  * Frontpage page.
  */
-app.controller('frontpageController', ['$scope', '$location',
+angular.module('MapsApp').controller('frontpageController', ['$scope', '$location',
   function ($scope, $location) {
     "use strict";
 
     $scope.user = {
       'mail': '',
-      'name': '',
+      'name': 'Tester',
       'pass': ''
-    }
+    };
 
     /**
      * Create new map click handler.

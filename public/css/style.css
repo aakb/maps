@@ -1,11 +1,32 @@
+/******************
+ * Helpers
+ ******************/
 .is-right {
   text-align: right;
+}
+
+.is-center {
+  text-align: center;
+}
+
+.is-left {
+  text-align: left;
 }
 
 .mouse-pointer {
   cursor: pointer;
 }
 
+/******************
+ * Map layers
+ ******************/
+.layer-select-option {
+  display: block;
+}
+
+/******************
+ * Modal / overlay
+ ******************/
 .modalDialog {
   position: fixed;
   top: 0;
@@ -15,6 +36,7 @@
   background: rgba(0, 0, 0, 0.8);
   z-index: 100;
 }
+
 .modalDialog > div {
   background-color: #FFF;
   border-radius: 3px;
@@ -32,8 +54,4 @@
 
 .modalDialog .content {
   padding: 10px;
-}
-
-.layer-select-option {
-  display: block;
 }

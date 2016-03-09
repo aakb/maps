@@ -4,9 +4,22 @@
       <div class="column">
         <div class="content">
           <!-- Map -->
-					<itk-map center="" zoom="">
-						<div id="map" style="width: 100%; height: 600px"></div>
-					</itk-map>
+					<itk-map-config>
+						<!-- Leaflet map place holder -->
+            <div id="map" style="width: 100%; height: 600px"></div>
+
+            <!-- Basic map configuration -->
+            <p class="control is-center">
+              <a class="button is-primary" data-ng-click="mapConfiguration()">
+                <i class="fa fa-cogs"></i>
+                Configuration
+              </a>
+              <a class="button is-success" data-ng-click="generateMap()">
+                <i class="fa fa-floppy-o"></i>
+                Map code
+              </a>
+            </p>
+					</itk-map-config>
         </div>
       </div>
     </div>

@@ -3,8 +3,8 @@
  * Service to communication between search box and search result applications.
  */
 
-angular.module('MapsApp')
-  .service('geoJsonService', function($q){
+angular.module('MapsApp').service('geoJsonService', ['$q',
+  function ($q) {
     'use strict';
 
     this.getLayer = function getLayer(id) {
@@ -25,5 +25,6 @@ angular.module('MapsApp')
       });
 
       return deferred.promise;
-    };
-  });
+    }
+  }
+]);

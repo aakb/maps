@@ -1,7 +1,7 @@
 /**
  * Logout page.
  */
-app.controller('logoutController', ['$scope', '$window',
+angular.module('MapsApp').controller('logoutController', ['$scope', '$window',
   function ($scope, $window) {
     "use strict";
 
