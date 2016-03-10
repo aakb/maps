@@ -55,3 +55,10 @@
 .modalDialog .content {
   padding: 10px;
 }
+
+/******************
+ * Fixes
+ ******************/
+.app-wrapper, #map {
+  z-index: 1;
+}
